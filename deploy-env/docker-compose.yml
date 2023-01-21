@@ -90,9 +90,11 @@ services:
     container_name: traefik
     image: "traefik:v2.6.0"
     command:
-      - --entrypoints.web.address=:80
-      - --providers.docker=true
-      - --api
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
     networks:
