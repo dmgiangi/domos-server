@@ -2,8 +2,18 @@ version: '3.9'
 
 services:
   domos:
-    image: giangi/domos-server:latest
+    image: giangi/domobot-server:latest
     container_name: domos
+    networks:
+      - domos-network
+      - traefik-proxy
+    labels:
+      - traefik.http.routers.domobot.rule=Host(`domos.local`)
+      - traefik.http.routers.domobot.tls=true
+      - traefik.http.routers.domobot.tls.certresolver=le
+      - traefik.http.services.domobot.loadbalancer.server.port=8080
+      - traefik.docker.network=traefik-proxy
+
     depends_on:
       - loki
     ports:
@@ -16,6 +26,15 @@ services:
       - loki
     ports:
       - "3000:3000"
+    networks:
+      - domos-network
+      - traefik-proxy
+    labels:
+      - traefik.http.routers.grafana.rule=Host(`grafana.domos.local`)
+      - traefik.http.routers.grafana.tls=true
+      - traefik.http.routers.grafana.tls.certresolver=le
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.docker.network=traefik-proxy
     environment:
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=password
@@ -31,12 +50,16 @@ services:
       - fluent-bit
     ports:
       - "3100:3100"
+    networks:
+      - domos-network
 
   fluent-bit:
     image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
     container_name: fluent-bit
     ports:
       - "24224:24224"
+    networks:
+      - domos-network
     environment:
       - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
@@ -59,7 +82,17 @@ services:
     ports:
       - "8883:8883"
       - "8884:8884"
+    networks:
+      - domos-network
     logging:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+
+networks:
+  domos-network:
+    name: domos-network
+    external: true
+  traefik-proxy:
+    name: traefik-proxy
+    external: true
