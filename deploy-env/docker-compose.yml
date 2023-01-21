@@ -10,6 +10,10 @@ services:
       - loki
     ports:
       - "8080:8080"
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
 
   grafana:
     image: grafana/grafana:9.1.2
@@ -27,6 +31,10 @@ services:
       - ./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
 
   loki:
     image: grafana/loki:2.6.1
@@ -37,6 +45,10 @@ services:
       - "3100:3100"
     networks:
       - domos-network
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
 
   fluent-bit:
     image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
@@ -86,6 +98,10 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:rw
     networks:
       - domos-network
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
 
 networks:
   domos-network:
