@@ -8,8 +8,10 @@ services:
       - domos-network
       - traefik-proxy
     labels:
-      - "traefik.http.routers.domobot.rule=Host(`domos.local`)"
-      - "traefik.http.services.domobot.loadbalancer.server.port=3000"
+      - "traefik.http.routers.domobot.rule=Host(`domos.local`) && PathPrefix(`/web`)"
+      - "traefik.http.routers.domobot.middlewares=domobot-stripprefix"
+      - "traefik.http.middlewares.domobot-stripprefix.stripprefix.prefixes=/web"
+      - "traefik.http.services.domobot.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik-proxy"
       - "traefik.enable=true"
     depends_on:
