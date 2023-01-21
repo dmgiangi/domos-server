@@ -81,6 +81,8 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:rw
+    networks:
+      - domos-network
 
 networks:
   domos-network:
