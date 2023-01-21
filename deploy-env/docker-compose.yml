@@ -8,7 +8,6 @@ services:
       - domos-network
     depends_on:
       - loki
-      - traefik
     ports:
       - "8080:8080"
 
@@ -17,7 +16,6 @@ services:
     container_name: grafana
     depends_on:
       - loki
-      - traefik
     ports:
       - "3000:3000"
     networks:
