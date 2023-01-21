@@ -33,4 +33,5 @@ build/
 .vscode/
 
 ### mosquitto ###
-**/**/mosquito.db
+/test-env/mosquitto/data/mosquitto.db
+/deploy-env/mosquitto/data/mosquitto.db

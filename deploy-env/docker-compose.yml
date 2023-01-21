@@ -9,13 +9,11 @@ services:
       - traefik-proxy
     labels:
       - traefik.http.routers.domobot.rule=Host(`domos.local`)
-      - traefik.http.routers.domobot.tls=true
-      - traefik.http.routers.domobot.tls.certresolver=le
       - traefik.http.services.domobot.loadbalancer.server.port=8080
       - traefik.docker.network=traefik-proxy
-
     depends_on:
       - loki
+      - traefik
     ports:
       - "8080:8080"
 
@@ -24,6 +22,7 @@ services:
     container_name: grafana
     depends_on:
       - loki
+      - traefik
     ports:
       - "3000:3000"
     networks:
@@ -31,8 +30,6 @@ services:
       - traefik-proxy
     labels:
       - traefik.http.routers.grafana.rule=Host(`grafana.domos.local`)
-      - traefik.http.routers.grafana.tls=true
-      - traefik.http.routers.grafana.tls.certresolver=le
       - traefik.http.services.grafana.loadbalancer.server.port=3000
       - traefik.docker.network=traefik-proxy
     environment:
@@ -88,6 +85,29 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+
+  traefik:
+    container_name: traefik
+    image: "traefik:v2.6.0"
+    command:
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --api
+    ports:
+      - "80:80"
+    networks:
+      - traefik-proxy
+    volumes:
+      - "/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      # DASHBOARD
+      - "traefik.http.routers.traefik.rule=Host(`traefik.domos.local`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=admin"
+      - "traefik.http.middlewares.admin.basicauth.users=admin:$$apr1$$Dqo7TC2B$$23bAWltXXzx01XUbq2BU50"
+      # GLOBAL REDIRECT TO HTTPS
+      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.redirs.entrypoints=web"
 
 networks:
   domos-network:
