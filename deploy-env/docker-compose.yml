@@ -8,7 +8,7 @@ services:
       - domos-network
       - traefik-proxy
     labels:
-      - "traefik.http.routers.domobot.rule=Path(`/`)"
+      - "traefik.http.routers.domobot.rule=Host(`domos.local`)"
       - "traefik.http.services.domobot.loadbalancer.server.port=3000"
       - "traefik.docker.network=traefik-proxy"
       - "traefik.enable=true"
@@ -30,7 +30,9 @@ services:
       - domos-network
       - traefik-proxy
     labels:
-      - "traefik.http.routers.grafana.rule=Path(`/grafana`)"
+      - "traefik.http.routers.grafana.rule=Host(`domos.local`) && PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
+      - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       - "traefik.docker.network=traefik-proxy"
       - "traefik.enable=true"
@@ -99,19 +101,21 @@ services:
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
+      - "443:443"
     networks:
       - traefik-proxy
     volumes:
       - "/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       # DASHBOARD
-      - "traefik.http.routers.traefik.rule=Host(`domos.local`)"
-      - "traefik.http.routers.grafana.rule=Path(`/traefik`)"
+      - "traefik.http.routers.traefik.rule=Host(`domos.local`) && PathPrefix(`/traefik`)"
+      - "traefik.http.routers.traefik.middlewares=traefik-stripprefix"
+      - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.middlewares=admin"
       - "traefik.http.middlewares.admin.basicauth.users=admin:$$apr1$$Dqo7TC2B$$23bAWltXXzx01XUbq2BU50"
       # GLOBAL REDIRECT TO HTTPS
-      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.redirs.rule=Host(`domos.local`)"
       - "traefik.http.routers.redirs.entrypoints=web"
 
 networks:
