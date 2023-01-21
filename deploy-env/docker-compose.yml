@@ -8,12 +8,13 @@ services:
       - domos-network
       - traefik-proxy
     labels:
-      - "traefik.http.routers.domobot.rule=Host(`domos.local`) && PathPrefix(`/web`)"
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.http.routers.domobot.entrypoints=web"
+      - "traefik.http.routers.domobot.rule=PathPrefix(`/web{regex:$$|/.*}`)"
       - "traefik.http.routers.domobot.middlewares=domobot-stripprefix"
       - "traefik.http.middlewares.domobot-stripprefix.stripprefix.prefixes=/web"
-      - "traefik.http.services.domobot.loadbalancer.server.port=8080"
-      - "traefik.docker.network=traefik-proxy"
-      - "traefik.enable=true"
+      - "traefik.http.services.domobot.loadbalancer.server.port=3000"
     depends_on:
       - loki
       - traefik
@@ -32,12 +33,12 @@ services:
       - domos-network
       - traefik-proxy
     labels:
-      - "traefik.http.routers.grafana.rule=Host(`domos.local`) && PathPrefix(`/grafana`)"
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana{regex:$$|/.*}`)"
       - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
       - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
-      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik-proxy"
-      - "traefik.enable=true"
     environment:
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=password
@@ -96,6 +97,8 @@ services:
     container_name: traefik
     image: "traefik:v2.6.0"
     command:
+      - "--accesslog=true"
+      - "--log=true"
       - "--log.level=info"
       - "--api.insecure=true"
       - "--providers.docker=true"
