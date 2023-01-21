@@ -96,7 +96,7 @@ services:
     container_name: traefik
     image: "traefik:v2.6.0"
     command:
-      - "--log.level=DEBUG"
+      - "--log.level=info"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -110,14 +110,6 @@ services:
       - host.docker.internal:172.17.0.1
     volumes:
       - "/run/docker.sock:/var/run/docker.sock:ro"
-    labels:
-      # DASHBOARD
-      - "traefik.http.routers.traefik.rule=Host(`domos.local`) && PathPrefix(`/traefik`)"
-      - "traefik.http.routers.traefik.middlewares=traefik-stripprefix"
-      - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.middlewares=admin"
-      - "traefik.http.middlewares.admin.basicauth.users=admin:$$apr1$$Dqo7TC2B$$23bAWltXXzx01XUbq2BU50"
 
 networks:
   domos-network:
