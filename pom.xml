@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -67,10 +67,9 @@
                         </publishRegistry>
                     </docker>
                     <image>
-                        <name>${docker.username}/${project.artifactId}</name>
+                        <name>${docker.username}/${project.artifactId}:latest</name>
                         <publish>true</publish>
                         <tags>
-                            <tag>${docker.username}/${project.artifactId}:latest</tag>
                             <tag>${docker.username}/${project.artifactId}:${project.version}</tag>
                         </tags>
                         <builder>paketobuildpacks/builder:tiny</builder>
