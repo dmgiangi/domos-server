@@ -8,6 +8,8 @@ services:
       - loki
     ports:
       - "3000:3000"
+    networks:
+      - domos-network
     environment:
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=password
@@ -15,6 +17,10 @@ services:
       - ./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
 
   loki:
     image: grafana/loki:2.6.1
@@ -23,12 +29,16 @@ services:
       - fluent-bit
     ports:
       - "3100:3100"
+    networks:
+      - domos-network
 
   fluent-bit:
     image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
     container_name: fluent-bit
     ports:
       - "24224:24224"
+    networks:
+      - domos-network
     environment:
       - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
@@ -51,7 +61,36 @@ services:
     ports:
       - "8883:8883"
       - "8884:8884"
+    networks:
+      - domos-network
     logging:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+
+  reverse-proxy:
+    image: nginx:latest
+    container_name: reverse-proxy
+    depends_on:
+      - grafana
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/ssl.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem:ro
+      - ./nginx/nginx.crt:/etc/ssl/certs/nginx.crt:ro
+      - ./nginx/nginx.key:/etc/ssl/private/nginx.key:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - domos-network
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
+networks:
+  domos-network:
+    name: domos-network
+    external: true
