@@ -1,10 +1,10 @@
-package dev.dmgiangi.domobotserver;
+package dev.dmgiangi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DomobotServerApplicationTests {
+class ApplicationTests {
 
 	@Test
 	void contextLoads() {

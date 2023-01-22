@@ -14,9 +14,9 @@ services:
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=password
     volumes:
-      - ./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
-      - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - "./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml"
+      - "./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards"
+      - "./observability/grafana/grafana.ini:/etc/grafana/grafana.ini"
     logging:
       driver: fluentd
       options:
@@ -42,7 +42,7 @@ services:
     environment:
       - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
-      - ./observability/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - "./observability/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf"
 
   mosquitto:
     #user: giangi
@@ -53,11 +53,10 @@ services:
       - loki
     user: 1000:999
     volumes:
-      - "./mosquitto/config:/mosquitto/config"
-      - "./mosquitto/data/:/mosquitto/data"
-      - "./mosquitto/certs/localhost.crt:/mosquitto/certs/cert.crt:ro"
-      - "./mosquitto/certs/localhost.key:/mosquitto/certs/cert.key:ro"
-      - "./mosquitto/certs/root.crt:/mosquitto/ca_certificates/root.crt:ro"
+      - "./mosquitto/:/mosquitto/config"
+      - "./certs/localhost.crt:/mosquitto/certs/cert.crt:ro"
+      - "./certs/localhost.key:/mosquitto/certs/cert.key:ro"
+      - "./certs/root.crt:/mosquitto/ca_certificates/root.crt:ro"
     restart: always
     ports:
       - "8883:8883"
@@ -78,10 +77,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/ssl.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem:ro
-      - ./certs/bundle.crt:/etc/ssl/certs/cert.crt:ro
-      - ./certs/localhost.key:/etc/ssl/private/cert.key:ro
+      - "./nginx/ssl.conf:/etc/nginx/conf.d/default.conf:ro"
+      - "./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem:ro"
+      - "./certs/bundle.crt:/etc/ssl/certs/cert.crt:ro"
+      - "./certs/localhost.key:/etc/ssl/private/cert.key:ro"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:

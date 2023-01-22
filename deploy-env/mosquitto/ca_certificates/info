@@ -1,8 +1,0 @@
-Certificate autority
-certificate: ca.crt password: capassword
-
-Server certificate
-certificate: server.crt
-key: server.key
-
-
