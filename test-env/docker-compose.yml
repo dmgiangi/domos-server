@@ -32,6 +32,22 @@ services:
     networks:
       - domos-network
 
+  mariadb:
+    container_name: mariadb
+    image: mariadb
+    restart: always
+    networks:
+      - domos-network
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: test
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+
   fluent-bit:
     image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
     container_name: fluent-bit

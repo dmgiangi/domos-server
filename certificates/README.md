@@ -58,3 +58,5 @@ server {
     ...
 }
 ```
+
+keytool -import -file ./root.crt -alias MyRootCa -keystore testTruststore
