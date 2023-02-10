@@ -24,6 +24,12 @@ openssl req -new -out FQDN.csr -key FQDN.key
 # Generate the signed certificate with
 openssl x509 -req -in FQDN.csr -CA root.crt -CAkey root.key -CAcreateserial -out FQDN.crt -days 64000
 ```
+### Create Java Truststore with root certificate
+With this command we will create a java truststore in order to verify the other certificate that we have created
+after running the command you will be prompted for a password for the truststore
+```shell
+keytool -import -file ./root.crt -alias MyRootCa -keystore testTruststore
+```
 ### Now?
 you don't need usually the csr file, so you can delete it. \
 you can now install your certificate where you need.
@@ -58,5 +64,3 @@ server {
     ...
 }
 ```
-
-keytool -import -file ./root.crt -alias MyRootCa -keystore testTruststore
