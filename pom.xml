@@ -88,12 +88,12 @@
                     </profiles>
                     <docker>
                         <publishRegistry>
-                            <username>${env.DOCKER_HUB_USER}</username>
-                            <password>${env.DOCKER_HUB_PASSWORD}</password>
+                            <username>${docker.hub.user}</username>
+                            <password>${docker.hub.password}</password>
                             <url>docker.io</url>
                         </publishRegistry>
                         <publishRegistry>
-                            <token>${env.GHCR_TOKEN}</token>
+                            <token>${github.token}</token>
                             <url>ghcr.io</url>
                         </publishRegistry>
                     </docker>
@@ -102,10 +102,10 @@
                         <name>${project.artifactId}:latest</name>
                         <publish>true</publish>
                         <tags>
-                            <tag>${env.DOCKER_HUB_USER}/${project.artifactId}:latest</tag>
-                            <tag>${env.DOCKER_HUB_USER}/${project.artifactId}:${project.version}</tag>
-                            <tag>ghcr.io/${env.GH_USER}/${project.artifactId}:latest</tag>
-                            <tag>ghcr.io/${env.GH_USER}/${project.artifactId}:${project.version}</tag>
+                            <tag>${docker.hub.user}/${project.artifactId}:latest</tag>
+                            <tag>${docker.hub.user}/${project.artifactId}:${project.version}</tag>
+                            <tag>ghcr.io/${github.user}/${project.artifactId}:latest</tag>
+                            <tag>ghcr.io/${github.user}/${project.artifactId}:${project.version}</tag>
                         </tags>
                         <env>
                             <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
