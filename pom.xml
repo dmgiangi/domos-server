@@ -99,7 +99,7 @@
                     </docker>
                     <image>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
-                        <name>${project.artifactId}:latest</name>
+                        <name>${docker.hub.user}/${project.artifactId}:latest</name>
                         <publish>true</publish>
                         <tags>
                             <tag>${docker.hub.user}/${project.artifactId}:latest</tag>
