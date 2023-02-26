@@ -106,6 +106,7 @@
                         <configuration>
                             <docker>
                                 <publishRegistry>
+                                    <username>${github.user}</username>
                                     <token>${github.token}</token>
                                     <url>ghcr.io</url>
                                 </publishRegistry>
