@@ -3,8 +3,13 @@ on: push
 
 env:
   GH_REGISTRY: ghcr.io
+  GH_USER: dmgiangi
+  GH_CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   DOCKER_REGISTRY: docker.io
-  DOCKER_HUB_USER: giangi
+  DOCKER_HUB_USER: ${secrets.DOCKER_HUB_USER}
+  DOCKER_HUB_PASSWORD: ${secrets.DOCKER_HUB_PASSWORD}
+
   IMAGE_NAME: domobot-server
   VERSION: latest
 
@@ -74,20 +79,3 @@ jobs:
         if: success() || failure()
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
-
-      - name: Log into container registry
-        uses: docker/login-action@v2
-        with:
-          username: giangi
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      - name: Publish container image
-        run: docker push ${{ env.DOCKER_HUB_USER }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-
-      - name: Log into container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.GH_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish container image
-        run: docker push ${{ env.GH_REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
