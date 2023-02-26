@@ -45,12 +45,14 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
+
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
           cache: maven
+
       - name: Build container image
         run: |
           chmod +x mvnw
@@ -70,15 +72,29 @@ jobs:
         uses: anchore/scan-action@v3
         id: scan
         with:
-          image: ${{ env.IMAGE_NAME }}:latest
+          image: ${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest
           fail-build: false
           severity-cutoff: high
+
       - name: Upload vulnerability report
         uses: github/codeql-action/upload-sarif@v2
         if: success() || failure()
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
-      - name: Log into container registry
+
+      - name: Log into github container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish container image
+        run: |
+          docker tag ${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:latest
+          docker tag ${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+          docker push ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}
+      - name: Log into docker container registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -86,6 +102,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish container image
         run: |
-          docker tag ${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:latest
-          docker tag ${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
-          docker push ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}
+          docker push docker.io/${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest
+          docker push docker.io/${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
