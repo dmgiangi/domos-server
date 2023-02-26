@@ -1,10 +1,6 @@
 name: Commit Stage
 on: push
 
-env:
-  IMAGE_NAME: domobot-server
-  VERSION: latest
-
 jobs:
   build:
     name: Build and Test
@@ -59,19 +55,22 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw clean package \
-          spring-boot:build-image-no-fork@DockerHubRegistry \
-          spring-boot:build-image-no-fork@GithubContainerRegistry \
+          spring-boot:build-image-no-fork \
           --activate-profiles prod \
           -DskipTests \
           -Ddocker.hub.user=${{secrets.DOCKER_HUB_USER}} \
-          -Ddocker.hub.password=${{secrets.DOCKER_HUB_PASSWORD}} \
-          -Dgithub.user=${{ github.actor }} \
-          -Dgithub.token=${{secrets.GITHUB_TOKEN}}
+          -Ddocker.hub.password=${{secrets.DOCKER_HUB_PASSWORD}}
+
+      - name: Set Release version env variable
+        run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Set Release version env variable
+        run: echo "IMAGE_NAME=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
+
       - name: OCI image vulnerability scanning
         uses: anchore/scan-action@v3
         id: scan
         with:
-          image: ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          image: ${{ env.IMAGE_NAME }}:latest
           fail-build: false
           severity-cutoff: high
       - name: Upload vulnerability report
@@ -79,3 +78,14 @@ jobs:
         if: success() || failure()
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
+      - name: Log into container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish container image
+        run: |
+          docker tag ${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:latest
+          docker tag ${{secrets.DOCKER_HUB_USER}}/${{ env.IMAGE_NAME }}:latest ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+          docker push ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}
