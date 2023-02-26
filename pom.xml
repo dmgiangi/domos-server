@@ -91,8 +91,8 @@
                         <name>${project.artifactId}:latest</name>
                         <publish>false</publish>
                         <tags>
-                            <tag>docker.io/giangi/${project.artifactId}:latest</tag>
-                            <tag>docker.io/giangi/${project.artifactId}:${project.version}</tag>
+                            <tag>giangi/${project.artifactId}:latest</tag>
+                            <tag>giangi/${project.artifactId}:${project.version}</tag>
                             <tag>ghcr.io/dmgiangi/${project.artifactId}:latest</tag>
                             <tag>ghcr.io/dmgiangi/${project.artifactId}:${project.version}</tag>
                         </tags>
