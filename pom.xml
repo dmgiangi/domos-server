@@ -82,31 +82,50 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>DockerHubRegistry</id>
+                        <configuration>
+                            <docker>
+                                <publishRegistry>
+                                    <username>${docker.hub.user}</username>
+                                    <password>${docker.hub.password}</password>
+                                    <url>docker.io</url>
+                                </publishRegistry>
+                            </docker>
+                            <image>
+                                <name>docker.io/${docker.hub.user}/${project.artifactId}:latest</name>
+                                <tags>
+                                    <tag>docker.io/${docker.hub.user}/${project.artifactId}:${project.version}</tag>
+                                </tags>
+                            </image>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>GithubContainerRegistry</id>
+                        <configuration>
+                            <docker>
+                                <publishRegistry>
+                                    <token>${github.token}</token>
+                                    <url>ghcr.io</url>
+                                </publishRegistry>
+                            </docker>
+                            <image>
+                                <name>ghcr.io/${github.user}/${project.artifactId}:latest</name>
+                                <tags>
+                                    <tag>ghcr.io/${github.user}/${project.artifactId}:${project.version}</tag>
+                                </tags>
+                            </image>
+                        </configuration>
+                    </execution>
+                </executions>
                 <configuration>
                     <profiles>
                         <profile>${spring.profiles.active}</profile>
                     </profiles>
-                    <docker>
-                        <publishRegistry>
-                            <username>${docker.hub.user}</username>
-                            <password>${docker.hub.password}</password>
-                            <url>docker.io</url>
-                        </publishRegistry>
-                        <publishRegistry>
-                            <token>${github.token}</token>
-                            <url>ghcr.io</url>
-                        </publishRegistry>
-                    </docker>
                     <image>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
-                        <name>docker.io/${docker.hub.user}/${project.artifactId}:latest</name>
                         <publish>true</publish>
-                        <tags>
-                            <tag>docker.io/${docker.hub.user}/${project.artifactId}:latest</tag>
-                            <tag>docker.io/${docker.hub.user}/${project.artifactId}:${project.version}</tag>
-                            <tag>ghcr.io/${github.user}/${project.artifactId}:latest</tag>
-                            <tag>ghcr.io/${github.user}/${project.artifactId}:${project.version}</tag>
-                        </tags>
                         <env>
                             <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
                             <BPE_APPEND_JAVA_TOOL_OPTIONS>
