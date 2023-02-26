@@ -93,8 +93,7 @@
                             <url>docker.io</url>
                         </publishRegistry>
                         <publishRegistry>
-                            <username>${env.GH_USER}</username>
-                            <password>${env.GHCR_TOKEN}</password>
+                            <token>${env.GHCR_TOKEN}</token>
                             <url>ghcr.io</url>
                         </publishRegistry>
                     </docker>
