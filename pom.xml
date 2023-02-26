@@ -99,11 +99,11 @@
                     </docker>
                     <image>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
-                        <name>${docker.hub.user}/${project.artifactId}:latest</name>
+                        <name>docker.io/${docker.hub.user}/${project.artifactId}:latest</name>
                         <publish>true</publish>
                         <tags>
-                            <tag>${docker.hub.user}/${project.artifactId}:latest</tag>
-                            <tag>${docker.hub.user}/${project.artifactId}:${project.version}</tag>
+                            <tag>docker.io/${docker.hub.user}/${project.artifactId}:latest</tag>
+                            <tag>docker.io/${docker.hub.user}/${project.artifactId}:${project.version}</tag>
                             <tag>ghcr.io/${github.user}/${project.artifactId}:latest</tag>
                             <tag>ghcr.io/${github.user}/${project.artifactId}:${project.version}</tag>
                         </tags>
