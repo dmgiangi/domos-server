@@ -58,7 +58,7 @@ jobs:
       - name: Build container image
         run: |
           chmod +x mvnw
-          ./mvnw   --activate-profiles prod \
+          ./mvnw spring-boot:build-image -DskipTests --activate-profiles prod \
           -Ddocker.hub.user=${{secrets.DOCKER_HUB_USER}} \
           -Ddocker.hub.password=${{secrets.DOCKER_HUB_PASSWORD}} \
           -Dgithub.user=${{ github.actor }} \
