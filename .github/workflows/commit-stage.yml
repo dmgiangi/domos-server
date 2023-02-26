@@ -2,8 +2,9 @@ name: Commit Stage
 on: push
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: dmgiangi/domobot-server
+  GH_REGISTRY: ghcr.io/dmgiangi
+  DOCKER_REGISTRY: docker.io/giangi
+  IMAGE_NAME: domobot-server
   VERSION: latest
 
 jobs:
@@ -59,12 +60,12 @@ jobs:
       - name: Build container image
         run: |
           chmod +x mvnw
-          ./mvnw spring-boot:build-image
+          ./mvnw spring-boot:build-image -DskipTests --activate-profiles dev
       - name: OCI image vulnerability scanning
         uses: anchore/scan-action@v3
         id: scan
         with:
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          image: ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
           fail-build: false
           severity-cutoff: high
       - name: Upload vulnerability report
@@ -79,4 +80,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish container image
-        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+        run: docker push ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+      - name: Publish container image
+        run: docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}

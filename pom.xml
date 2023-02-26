@@ -86,19 +86,15 @@
                     <profiles>
                         <profile>${spring.profiles.active}</profile>
                     </profiles>
-                    <docker>
-                        <publishRegistry>
-                            <username>${docker.username}</username>
-                            <password>${docker.password}</password>
-                            <url>docker.io</url>
-                        </publishRegistry>
-                    </docker>
                     <image>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
-                        <name>${docker.username}/${project.artifactId}:latest</name>
-                        <publish>true</publish>
+                        <name>${project.artifactId}:latest</name>
+                        <publish>false</publish>
                         <tags>
-                            <tag>${docker.username}/${project.artifactId}:${project.version}</tag>
+                            <tag>docker.io/giangi/${project.artifactId}:latest</tag>
+                            <tag>docker.io/giangi/${project.artifactId}:${project.version}</tag>
+                            <tag>ghcr.io/dmgiangi/${project.artifactId}:latest</tag>
+                            <tag>ghcr.io/dmgiangi/${project.artifactId}:${project.version}</tag>
                         </tags>
                         <env>
                             <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
