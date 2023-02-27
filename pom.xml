@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.2</version>
+        <version>3.0.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -83,21 +83,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <profiles>
-                        <profile>${spring.profiles.active}</profile>
-                    </profiles>
                     <image>
-                        <name>${docker.hub.user}/${project.artifactId}:latest</name>
-                        <tags>
-                            <tag>${docker.hub.user}/${project.artifactId}:${project.version}</tag>
-                        </tags>
+                        <name>${project.groupId}/${project.artifactId}:latest</name>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                         <publish>false</publish>
                         <env>
-                            <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
-                            <BPE_APPEND_JAVA_TOOL_OPTIONS>
-                                -Dspring.profiles.active=${spring.profiles.active}
-                            </BPE_APPEND_JAVA_TOOL_OPTIONS>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
                             <BP_JVM_VERSION>17</BP_JVM_VERSION>
                         </env>
@@ -112,22 +102,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <spring.profiles.active>dev</spring.profiles.active>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <spring.profiles.active>prod</spring.profiles.active>
-            </properties>
-        </profile>
-    </profiles>
 </project>
